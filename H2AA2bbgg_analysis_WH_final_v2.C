@@ -223,6 +223,8 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float Electron_minisoall[njetmx];
 
   int nPhoton;
+  bool Photon_passEveto[njetmx];
+  bool Photon_PixelSeed[njetmx];
   bool Photon_mvaid_Fall17V2_WP90[njetmx];
   bool Photon_mvaid_Fall17V2_WP80[njetmx];
   float Photon_mvaid_Fall17V2_raw[njetmx];
@@ -358,6 +360,14 @@ int main(int argc, char *argv[])
         }
 
         else if(inputFile=="new_v2/TTToSemiLeptonic_new_v2.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/TTSL/2018/WH/TTSL_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v2/TTTo2L2Nu_veto_new_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/TTTo2L2Nu/2018/WH/TTTo2L2Nu_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="new_v2/TTToSemiLeptonic_veto_new_v1.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTSL/2018/WH/TTSL_%s_%s.root",argv[1],argv[2]);
         }
 
@@ -732,6 +742,8 @@ int main(int argc, char *argv[])
   T1->SetBranchAddress("Electron_convVeto", Electron_convVeto);
 
   T1->SetBranchAddress("nPhoton",&nPhoton);
+  T1->SetBranchAddress("Photon_passEveto",Photon_passEveto);
+  T1->SetBranchAddress("Photon_PixelSeed",Photon_PixelSeed);
   T1->SetBranchAddress("Photon_e",Photon_e);
   T1->SetBranchAddress("Photon_pt",Photon_pt);
   T1->SetBranchAddress("Photon_eta",Photon_eta);
@@ -1225,9 +1237,9 @@ int main(int argc, char *argv[])
           ab = 0;
           aa = 0;
     
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] >= 0.2783)) {bb = 1;}
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] > 0.0490 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {ab = 1;}
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20 && (PFJetAK4_btag_DeepFlav[0] < 0.2783 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {aa = 1;}
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] >= 0.2783)) {bb = 1;}
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] > 0.0490 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {ab = 1;}
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10 && (PFJetAK4_btag_DeepFlav[0] < 0.2783 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {aa = 1;}
 
 	  if (isEle)
 	  {
@@ -1242,7 +1254,7 @@ int main(int argc, char *argv[])
           }
 
 
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20) {  
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10) {  
           if (Jet_pt_nom[0] >= Jet_pt_nom[1])
           {
                    leadbvec_nom.SetPtEtaPhiM(Jet_pt_nom[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_nom[0]);
@@ -1255,7 +1267,7 @@ int main(int argc, char *argv[])
                    leadbvec_nom.SetPtEtaPhiM(Jet_pt_nom[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_nom[1]);
           } }
 
-          if (Jet_pt_jesup[0] >= 20 && Jet_pt_jesup[1] >= 20) {
+          if (Jet_pt_jesup[0] >= 10 && Jet_pt_jesup[1] >= 10) {
           if (Jet_pt_jesup[0] >= Jet_pt_jesup[1])
           {
                    leadbvec_jesup.SetPtEtaPhiM(Jet_pt_jesup[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_jesup[0]);
@@ -1268,7 +1280,7 @@ int main(int argc, char *argv[])
                    leadbvec_jesup.SetPtEtaPhiM(Jet_pt_jesup[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_jesup[1]);
           } }
 
-          if (Jet_pt_jesdn[0] >= 20 && Jet_pt_jesdn[1] >= 20) {
+          if (Jet_pt_jesdn[0] >= 10 && Jet_pt_jesdn[1] >= 10) {
           if (Jet_pt_jesdn[0] >= Jet_pt_jesdn[1])
           {
                    leadbvec_jesdn.SetPtEtaPhiM(Jet_pt_jesdn[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_jesdn[0]);
@@ -1281,7 +1293,7 @@ int main(int argc, char *argv[])
                    leadbvec_jesdn.SetPtEtaPhiM(Jet_pt_jesdn[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_jesdn[1]);
           } }
 
-          if (Jet_pt_resoup[0] >= 20 && Jet_pt_resoup[1] >= 20) { 
+          if (Jet_pt_resoup[0] >= 10 && Jet_pt_resoup[1] >= 10) { 
           if (Jet_pt_resoup[0] >= Jet_pt_resoup[1])
           {
                    leadbvec_resoup.SetPtEtaPhiM(Jet_pt_resoup[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_resoup[0]);
@@ -1294,7 +1306,7 @@ int main(int argc, char *argv[])
                    leadbvec_resoup.SetPtEtaPhiM(Jet_pt_resoup[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_resoup[1]);
           } }
 
-          if (Jet_pt_resodn[0] >= 20 && Jet_pt_resodn[1] >= 20) {
+          if (Jet_pt_resodn[0] >= 10 && Jet_pt_resodn[1] >= 10) {
           if (Jet_pt_resodn[0] >= Jet_pt_resodn[1])
           {
                    leadbvec_resodn.SetPtEtaPhiM(Jet_pt_resodn[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_resodn[0]);
@@ -1316,7 +1328,9 @@ int main(int argc, char *argv[])
 
 	  for(int i=0; i<nPhoton; i++)
 	  {
-		  if (Photon_pt[i] < 20) continue;
+		  if (Photon_PixelSeed[i]) continue;
+		  if (!Photon_passEveto[i]) continue;
+		  if (Photon_pt[i] < 10) continue;
                   if (fabs(Photon_eta[i]) > 2.5) continue;
                   if (fabs(Photon_eta[i]) > 1.44 && fabs(Photon_eta[i]) < 1.57) continue;
         //        if (Photon_hadbyem[i] >= 0.08) continue;
