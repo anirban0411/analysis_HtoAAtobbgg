@@ -306,7 +306,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 
 int main(int argc, char *argv[])
 {
-	isMC = true;
+	isMC = false;
         isFastSIM = false;
 	char fOut[50];
         string inputFile=argv[3];
@@ -335,92 +335,64 @@ int main(int argc, char *argv[])
 
 
 
-	if(inputFile=="all_log_files/WH_mA_20_test.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/FastSIM/WH_mA_20/WH_mA_20_0000_%s_%s.root",argv[1],argv[2]);
+	if(inputFile=="new_v3_2018/WH_M20_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_20_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="all_log_files/WH_mA_55_test.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/FastSIM/WH_mA_55/WH_mA_55_0000_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/WH_M55_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_55_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v2/TTGJets_new_v2.log"){
+	else if(inputFile=="new_v3_2018/WH_M40_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_40_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="new_v3_2018/TTGJets_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTGJets/2018/WH/TTGJets_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/TTGG_0Jets_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/TTGG/2018/WH/TTGG_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="new_v2/DYJetsToLL_M50_new_v2.log"){
+        else if(inputFile=="new_v3_2018/DYJetsToLL_M50_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/DYJetsToLL/2018/WH/DYJetsToLL_M50_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v2/TTTo2L2Nu_new_v2.log"){
+        else if(inputFile=="new_v3_2018/TTTo2L2Nu_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTTo2L2Nu/2018/WH/TTTo2L2Nu_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v2/TTToSemiLeptonic_new_v2.log"){
+        else if(inputFile=="new_v3_2018/TTToSemiLeptonic_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTSL/2018/WH/TTSL_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v2/TTTo2L2Nu_veto_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/TTTo2L2Nu/2018/WH/TTTo2L2Nu_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="new_v2/TTToSemiLeptonic_veto_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/TTSL/2018/WH/TTSL_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="new_v1/WJetsToLNu_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/WJetsToLNu/2018/WH/WJetsToLNu_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="all_log_files/WGToLNuG_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/WGToLNuG/2018/WH/electron/WGToLNuG_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="all_log_files/WGJets_MonoPhoton_PtG_40to130_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/WGJets_MonoPhoton/2018/WH/electron/WGJets_MonoPhoton_PtG_40to130_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="all_log_files/WGJets_MonoPhoton_PtG_130_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/WGJets_MonoPhoton/2018/WH/electron/WGJets_MonoPhoton_PtG_130_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="all_log_files/ZGToLLG_01J_5f_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/ZGToLLG/2018/WH/electron/ZGToLLG_01J_5f_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="new_v2/EGamma_2018A_new_v2.log"){
+        else if(inputFile=="new_v3_2018/EGamma_2018A_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018A_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v2/EGamma_2018B_new_v2.log"){
+        else if(inputFile=="new_v3_2018/EGamma_2018B_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018B_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v2/EGamma_2018C_new_v2.log"){
+        else if(inputFile=="new_v3_2018/EGamma_2018C_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018C_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v2/EGamma_2018D_new_v2.log"){
+        else if(inputFile=="new_v3_2018/EGamma_2018D_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018D_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v2/SingleMuon_2018A_new_v2.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/SinMu_2018A_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/SingleMuon_2018A_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018A_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v2/SingleMuon_2018B_new_v2.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/SinMu_2018B_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/SingleMuon_2018B_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018B_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v2/SingleMuon_2018C_new_v2.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/SinMu_2018C_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/SingleMuon_2018C_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018C_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v2/SingleMuon_2018D_new_v2.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/SinMu_2018D_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/SingleMuon_2018D_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018D_%s_%s.root",argv[1],argv[2]);
         }
 
 	else{
@@ -1338,12 +1310,10 @@ int main(int argc, char *argv[])
 		  if (fabs(Photon_eta[i]) <= 1.44)
 		  {
 		  	if (Photon_mvaid_Fall17V2_raw[i] < -0.02) continue;	//90% signal efficiency
-		//	if (Photon_mvaid_Fall17V2_raw[i] < 0.42) continue;	//80% signal efficiency
 		  }
 		  if (fabs(Photon_eta[i]) >= 1.57)
                   {
                         if (Photon_mvaid_Fall17V2_raw[i] < -0.26) continue;	//90% signal efficiency 
-		//	if (Photon_mvaid_Fall17V2_raw[i] < 0.14) continue;	//80% signal efficiency 
                   }
 
 		  TLorentzVector phovec;
@@ -1720,12 +1690,10 @@ int main(int argc, char *argv[])
 
           if(isMC){
 
-//          event_weight = 1.0;
+//        event_weight = 1.0;
       
 //	  xsec_weight = (59730*365.34*1.3)/(1.48899*pow(10,11)); 
           weight_nom = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig;
-
-//	cout << event_weight << " " << puWeight << " " << leptonsf_weight << " " << PFJetAK4_btag_DeepFlav_SF[0] << " " << PFJetAK4_btag_DeepFlav_SF[1] << endl;
 
           weight_PU_up = event_weight * puWeightup * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
           weight_leptonsf_up = event_weight * puWeight * leptonsf_weight_up * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
@@ -1761,9 +1729,6 @@ int main(int argc, char *argv[])
 
 }
 	 
-
-//	  Tout->Fill();
-   
 
         }
 
