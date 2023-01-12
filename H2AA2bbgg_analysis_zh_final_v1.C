@@ -218,6 +218,8 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float Electron_minisoall[njetmx];
 
   int nPhoton;
+  bool Photon_passEveto[njetmx];
+  bool Photon_PixelSeed[njetmx];
   bool Photon_mvaid_Fall17V2_WP90[njetmx];
   bool Photon_mvaid_Fall17V2_WP80[njetmx];
   float Photon_mvaid_Fall17V2_raw[njetmx];
@@ -270,7 +272,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float b1pt_resoup, b1y_resoup, b1eta_resoup, b1phi_resoup, b1e_resoup, b2pt_resoup, b2y_resoup, b2eta_resoup, b2phi_resoup, b2e_resoup, bb_inv_mass_resoup;
   float b1pt_resodn, b1y_resodn, b1eta_resodn, b1phi_resodn, b1e_resodn, b2pt_resodn, b2y_resodn, b2eta_resodn, b2phi_resodn, b2e_resodn, bb_inv_mass_resodn;
 
-  float pho_no, pho1pt, pho1y, pho1eta, pho1phi, pho1e, pho2pt, pho2y, pho2eta, pho2phi, pho2e, dipho_invmass;
+  float pho_no, pho1pt, pho1y, pho1eta, pho1phi, pho1e, pho2pt, pho2y, pho2eta, pho2phi, pho2e, pho1MVA, pho2MVA, dipho_invmass;
 
   float invmassbbgg, invmassbbgg_jesup, invmassbbgg_jesdn, invmassbbgg_resoup, invmassbbgg_resodn;
   float bb_gg_dphi, bb_gg_dphi_jesup, bb_gg_dphi_jesdn, bb_gg_dphi_resoup, bb_gg_dphi_resodn;
@@ -325,74 +327,72 @@ int main(int argc, char *argv[])
         file_pu_ratio = new TFile(name,"read");
 
 
-	if(inputFile=="new_v1/ZH_mA_20_test.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/FastSIM/ZH_mA_20/ZH_mA_20_0000_%s_%s.root",argv[1],argv[2]);
+
+	if(inputFile=="new_v3_2018/ZH_M20_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/ZH/ZH_mA_20_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/ZH_mA_55_test.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/FastSIM/ZH_mA_55/ZH_mA_55_0000_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/ZH_M55_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/ZH/ZH_mA_55_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/TTGJets_new_v1.log"){
+        else if(inputFile=="new_v3_2018/ZH_M40_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/ZH/ZH_mA_40_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/TTGJets_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTGJets/2018/ZH/TTGJets_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/TTGG_0Jets_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/TTGG/2018/ZH/TTGG_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="new_v1/DYJetsToLL_M50_new_v1.log"){
+        else if(inputFile=="new_v3_2018/DYJetsToLL_M50_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/DYJetsToLL/2018/ZH/DYJetsToLL_M50_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/TTTo2L2Nu_new_v1.log"){
+        else if(inputFile=="new_v3_2018/TTTo2L2Nu_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTTo2L2Nu/2018/ZH/TTTo2L2Nu_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/TTToSemiLeptonic_new_v1.log"){
+        else if(inputFile=="new_v3_2018/TTToSemiLeptonic_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTSL/2018/ZH/TTSL_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/WJetsToLNu_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/WJetsToLNu/2018/ZH/WJetsToLNu_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/EGamma_2018A_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018A_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v1/EGamma_2018A_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/egamma_2018A_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/EGamma_2018B_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018B_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/EGamma_2018B_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/egamma_2018B_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/EGamma_2018C_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018C_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/EGamma_2018C_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/egamma_2018C_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/EGamma_2018D_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018D_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/EGamma_2018D_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/egamma_2018D_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/DoubleMuon_2018A_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubMu_2018A_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/DoubleMuon_2018A_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/DoubMu_2018A_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/DoubleMuon_2018B_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubMu_2018B_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/DoubleMuon_2018B_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/DoubMu_2018B_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/DoubleMuon_2018C_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubMu_2018C_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v1/DoubleMuon_2018C_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/DoubMu_2018C_%s_%s.root",argv[1],argv[2]);
-        }
-
-        else if(inputFile=="new_v1/DoubleMuon_2018D_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/DoubMu_2018D_%s_%s.root",argv[1],argv[2]);
+        else if(inputFile=="new_v3_2018/DoubleMuon_2018D_new_v3.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubMu_2018D_%s_%s.root",argv[1],argv[2]);
         }
 
         else{
                 cout<<"Input file does not exist"<<endl;
                 exit(0);
         }
+
 
 
 	TFile *fSF_dilepton;
@@ -502,6 +502,8 @@ int main(int argc, char *argv[])
         Tout->Branch("pho2eta", &pho2eta, "pho2eta/F");
         Tout->Branch("pho2phi", &pho2phi, "pho2phi/F");
         Tout->Branch("pho2e", &pho2e, "pho2e/F");
+	Tout->Branch("pho1MVA", &pho1MVA, "pho1MVA/F");
+        Tout->Branch("pho2MVA", &pho2MVA, "pho2MVA/F");
         Tout->Branch("dipho_invmass", &dipho_invmass, "dipho_invmass/F");
 
         Tout->Branch("invmassbbgg", &invmassbbgg, "invmassbbgg/F");
@@ -696,6 +698,8 @@ int main(int argc, char *argv[])
   T1->SetBranchAddress("Electron_convVeto", Electron_convVeto);
 
   T1->SetBranchAddress("nPhoton",&nPhoton);
+  T1->SetBranchAddress("Photon_passEveto",Photon_passEveto);
+  T1->SetBranchAddress("Photon_PixelSeed",Photon_PixelSeed);
   T1->SetBranchAddress("Photon_e",Photon_e);
   T1->SetBranchAddress("Photon_pt",Photon_pt);
   T1->SetBranchAddress("Photon_eta",Photon_eta);
@@ -1185,9 +1189,9 @@ int main(int argc, char *argv[])
           ab = 0;
           aa = 0;
 
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] >= 0.2783)) {bb = 1;}
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] > 0.0490 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {ab = 1;}
-          if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20 && (PFJetAK4_btag_DeepFlav[0] < 0.2783 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {aa = 1;}
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] >= 0.2783)) {bb = 1;}
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10 && (PFJetAK4_btag_DeepFlav[0] >= 0.2783 && PFJetAK4_btag_DeepFlav[1] > 0.0490 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {ab = 1;}
+          if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10 && (PFJetAK4_btag_DeepFlav[0] < 0.2783 && PFJetAK4_btag_DeepFlav[1] < 0.2783)) {aa = 1;}
 
 
           if (isEle)
@@ -1203,7 +1207,7 @@ int main(int argc, char *argv[])
           }
 
 
-	  if (Jet_pt_nom[0] >= 20 && Jet_pt_nom[1] >= 20) {
+	  if (Jet_pt_nom[0] >= 10 && Jet_pt_nom[1] >= 10) {
           if (Jet_pt_nom[0] >= Jet_pt_nom[1])
           {
                    leadbvec_nom.SetPtEtaPhiM(Jet_pt_nom[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_nom[0]);
@@ -1216,7 +1220,7 @@ int main(int argc, char *argv[])
                    leadbvec_nom.SetPtEtaPhiM(Jet_pt_nom[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_nom[1]);
           } }
 
-          if (Jet_pt_jesup[0] >=20 && Jet_pt_jesup[1] >= 20) {
+          if (Jet_pt_jesup[0] >=10 && Jet_pt_jesup[1] >= 10) {
           if (Jet_pt_jesup[0] >= Jet_pt_jesup[1])
           {
                    leadbvec_jesup.SetPtEtaPhiM(Jet_pt_jesup[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_jesup[0]);
@@ -1229,7 +1233,7 @@ int main(int argc, char *argv[])
                    leadbvec_jesup.SetPtEtaPhiM(Jet_pt_jesup[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_jesup[1]);
           } }
 
-          if (Jet_pt_jesdn[0] >= 20 && Jet_pt_jesdn[1] >= 20) {
+          if (Jet_pt_jesdn[0] >= 10 && Jet_pt_jesdn[1] >= 10) {
           if (Jet_pt_jesdn[0] >= Jet_pt_jesdn[1])
           {
                    leadbvec_jesdn.SetPtEtaPhiM(Jet_pt_jesdn[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_jesdn[0]);
@@ -1242,7 +1246,7 @@ int main(int argc, char *argv[])
                    leadbvec_jesdn.SetPtEtaPhiM(Jet_pt_jesdn[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_jesdn[1]);
           } }
 
-	  if (Jet_pt_resoup[0] >= 20 && Jet_pt_resoup[1] >= 20) {
+	  if (Jet_pt_resoup[0] >= 10 && Jet_pt_resoup[1] >= 10) {
           if (Jet_pt_resoup[0] >= Jet_pt_resoup[1])
           {
                    leadbvec_resoup.SetPtEtaPhiM(Jet_pt_resoup[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_resoup[0]);
@@ -1255,7 +1259,7 @@ int main(int argc, char *argv[])
                    leadbvec_resoup.SetPtEtaPhiM(Jet_pt_resoup[1], PFJetAK4_eta[1], PFJetAK4_phi[1], Jet_mass_resoup[1]);
           } }
 
-          if (Jet_pt_resodn[0] >= 20 && Jet_pt_resodn[1] >= 20) {
+          if (Jet_pt_resodn[0] >= 10 && Jet_pt_resodn[1] >= 10) {
           if (Jet_pt_resodn[0] >= Jet_pt_resodn[1])
           {
                    leadbvec_resodn.SetPtEtaPhiM(Jet_pt_resodn[0], PFJetAK4_eta[0], PFJetAK4_phi[0], Jet_mass_resodn[0]);
@@ -1278,12 +1282,19 @@ int main(int argc, char *argv[])
 
           for(int i=0; i<nPhoton; i++)
           {
-        //        if (!Photon_mvaid_Fall17V2_WP90[i]) continue;
-                  if (Photon_pt[i] < 20) continue;
+                  if (Photon_PixelSeed[i]) continue;
+                  if (!Photon_passEveto[i]) continue;
+                  if (Photon_pt[i] < 10) continue;
                   if (fabs(Photon_eta[i]) > 2.5) continue;
                   if (fabs(Photon_eta[i]) > 1.44 && fabs(Photon_eta[i]) < 1.57) continue;
-                  if (Photon_hadbyem[i] >= 0.08) continue;
-                  if (Photon_e9by25[i] < 0.8) continue;
+                  if (fabs(Photon_eta[i]) <= 1.44)
+                  {
+                        if (Photon_mvaid_Fall17V2_raw[i] < -0.02) continue;     //90% signal efficiency
+                  }
+                  if (fabs(Photon_eta[i]) >= 1.57)
+                  {
+                        if (Photon_mvaid_Fall17V2_raw[i] < -0.26) continue;     //90% signal efficiency 
+                  }
 
                   TLorentzVector phovec;
                   phovec.SetPtEtaPhiE(Photon_pt[i], Photon_eta[i], Photon_phi[i], Photon_e[i]);
@@ -1295,6 +1306,7 @@ int main(int argc, char *argv[])
                   Photon_e[indx] = Photon_e[i];
                   Photon_eta[indx] = Photon_eta[i];
                   Photon_phi[indx] = Photon_phi[i];
+		  Photon_mvaid_Fall17V2_raw[indx] = Photon_mvaid_Fall17V2_raw[i];
 
                   if (++indx >= njetmx) break;
           }
@@ -1336,6 +1348,10 @@ int main(int argc, char *argv[])
                                   a = Photon_phi[i];
                                   Photon_phi[i] = Photon_phi[j];
                                   Photon_phi[j] = a;
+
+				  a = Photon_mvaid_Fall17V2_raw[i];
+                                  Photon_mvaid_Fall17V2_raw[i] = Photon_mvaid_Fall17V2_raw[j];
+                                  Photon_mvaid_Fall17V2_raw[j] = a;
                           }
                   }
           }
@@ -1551,10 +1567,14 @@ int main(int argc, char *argv[])
           pho2eta = subleadphovec.Eta();
           pho2phi = subleadphovec.Phi();
           pho2e = subleadphovec.Energy();
-          dipho_invmass = (leadphovec+subleadphovec).M(); }
+	  pho1MVA = Photon_mvaid_Fall17V2_raw[0];
+          pho2MVA = Photon_mvaid_Fall17V2_raw[1];
+          dipho_invmass = (leadphovec+subleadphovec).M(); 
 
 
           Tout->Fill();
+
+}
 
 
 	}
