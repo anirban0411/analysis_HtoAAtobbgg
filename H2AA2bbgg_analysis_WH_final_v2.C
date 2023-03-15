@@ -256,6 +256,9 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float Generator_qscale, Generator_x1, Generator_x2, Generator_xpdf1, Generator_xpdf2, Generator_scalePDF;
   int Generator_id1, Generator_id2;
 
+  float miset , misphi , sumEt, misetsig, Met, SumEt ;
+  int jet_no;
+
   int npu_vert;
   int npu_vert_true;
 
@@ -306,7 +309,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 
 int main(int argc, char *argv[])
 {
-	isMC = false;
+	isMC = true;
         isFastSIM = false;
 	char fOut[50];
         string inputFile=argv[3];
@@ -335,16 +338,40 @@ int main(int argc, char *argv[])
 
 
 
-	if(inputFile=="new_v3_2018/WH_M20_new_v3.log"){
+	if(inputFile=="new_v3_2018/WH_M20_new_v4.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_20_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v3_2018/WH_M55_new_v3.log"){
+        else if(inputFile=="new_v3_2018/WH_M25_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_25_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/WH_M30_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_30_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/WH_M35_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_35_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/WH_M40_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_40_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/WH_M45_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_45_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/WH_M50_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_50_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="new_v3_2018/WH_M55_new_v4.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_55_%s_%s.root",argv[1],argv[2]);
         }
 
-	else if(inputFile=="new_v3_2018/WH_M40_new_v3.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_40_%s_%s.root",argv[1],argv[2]);
+	else if(inputFile=="new_v3_2018/WH_M60_new_v4.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_60_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v3_2018/TTGJets_new_v3.log"){
@@ -430,7 +457,10 @@ int main(int argc, char *argv[])
 	Tout->Branch("lepphi", &lepphi, "lepphi/F");
 	Tout->Branch("lepe", &lepe, "lepe/F");
 
-//        Tout->Branch("bjet_no", &bjet_no, "bjet_no/I");
+	Tout->Branch("Met", &Met, "Met/F");
+        Tout->Branch("SumEt", &SumEt, "SumEt/F");
+
+        Tout->Branch("jet_no", &jet_no, "jet_no/I");
         Tout->Branch("b1pt", &b1pt, "b1pt/F");
         Tout->Branch("b1y", &b1y, "b1y/F");
         Tout->Branch("b1eta", &b1eta, "b1eta/F");
@@ -611,6 +641,9 @@ int main(int argc, char *argv[])
    T1->SetBranchAddress("prefiringweight",&prefiringweight);
    T1->SetBranchAddress("prefiringweightup",&prefiringweightup);
    T1->SetBranchAddress("prefiringweightdown",&prefiringweightdown);
+
+   T1->SetBranchAddress("CHSMET_pt",&miset);
+   T1->SetBranchAddress("CHSMET_sumEt",&sumEt);
 
    T1->SetBranchAddress("nPFJetAK4",&nPFJetAK4);
    T1->SetBranchAddress("PFJetAK4_pt",PFJetAK4_pt);
@@ -1301,12 +1334,11 @@ int main(int argc, char *argv[])
 	  for(int i=0; i<nPhoton; i++)
 	  {
 		  if (Photon_PixelSeed[i]) continue;
-		  if (!Photon_passEveto[i]) continue;
+	//	  if (!Photon_passEveto[i]) continue;
 		  if (Photon_pt[i] < 10) continue;
                   if (fabs(Photon_eta[i]) > 2.5) continue;
                   if (fabs(Photon_eta[i]) > 1.44 && fabs(Photon_eta[i]) < 1.57) continue;
-        //        if (Photon_hadbyem[i] >= 0.08) continue;
-	//	  if (Photon_e9by25[i] < 0.8) continue;
+      
 		  if (fabs(Photon_eta[i]) <= 1.44)
 		  {
 		  	if (Photon_mvaid_Fall17V2_raw[i] < -0.02) continue;	//90% signal efficiency
@@ -1384,138 +1416,82 @@ int main(int argc, char *argv[])
 	//--------------------------------------------------Gen Particle-----------------------------------------------//
 
 
-	int loc1 = 0;
- 	int loc2 = 0;
 
-	for(int i=0; i<nGenPart; i++)
-	{
-		TLorentzVector genpart_v;
-		genpart_v.SetPtEtaPhiM(GenPart_pt[i], GenPart_eta[i], GenPart_phi[i], GenPart_mass[i]);
-
-		dR_leadpho_genpart[i] = leadphovec.DeltaR(genpart_v);
-		dR_subleadpho_genpart[i] = subleadphovec.DeltaR(genpart_v);
-	}
-
-	for(int i=1; i<nGenPart; i++)
-	{
-		if (dR_leadpho_genpart[i] < dR_leadpho_genpart[loc1])
-		{
-			loc1 = i;
-		}
-		if (dR_subleadpho_genpart[i] < dR_subleadpho_genpart[loc2])
-                {
-                        loc2 = i;
-                }
-	}
+	  bool match_1 = false;
+	  bool match_2 = false;
+          
+	  bool match_3 = false;
+	  bool match_4 = false;
 
 
-/*	  indx = 0;
+          for(int i=0; i<nGenPart; i++)
+          {
 
-	  for(int i=0; i<nGenPart; i++)
-	  {
-		  if (!GenPart_fromhard[i]) continue;
-		  if (fabs(GenPart_pdg[i]) != 22) continue;
-		  if (fabs(GenPart_mompdg[i]) != 35) continue;
+                  if (fabs(GenPart_pdg[i]) != 22) continue;
 
-		  GenPart_pt[indx] = GenPart_pt[i];
-		  GenPart_eta[indx] = GenPart_eta[i];
-		  GenPart_phi[indx] = GenPart_phi[i];
-		  GenPart_mass[indx] = GenPart_mass[i];
+                  TLorentzVector genP;
+                  genP.SetPtEtaPhiM(GenPart_pt[i], GenPart_eta[i], GenPart_phi[i], GenPart_mass[i]);
 
-		  if (++indx >= npartmx) break;
-	  }
+                  if (leadphovec.DeltaR(genP) < 0.4)
+                  {
+			  match_1 = true;
+                  }
 
-	  nGenPart = indx;
+		  if (subleadphovec.DeltaR(genP) < 0.4)
+                  {
+			  match_2 = true;
+                  }
 
-	  if (nGenPart != 2) continue;
+          }
+
+	  if (match_1) {cut_flow_ph->Fill(0);}
+	  if (!match_1) {cut_flow_ph->Fill(1);}
+	  if (match_2) {cut_flow_ph->Fill(2);}
+          if (!match_2) {cut_flow_ph->Fill(3);}
+
 
 	  if (isEle)
           {
-                  if (bb == 1) {cut_flow_el->Fill(10);}
-          }
-
-          if (isMu)
+	  for(int i=0; i<nGenPart; i++)
           {
-                  if (bb == 1) {cut_flow_mu->Fill(10);}
-          }
+         
+                  if (fabs(GenPart_pdg[i]) != 11) continue;
+       
+		  TLorentzVector genE;
+		  genE.SetPtEtaPhiM(GenPart_pt[i], GenPart_eta[i], GenPart_phi[i], GenPart_mass[i]);
 
-	  for (int i=0; i<nGenPart; i++)
-          {
-                  for (int j=i+1; j<nGenPart; j++)
-                  {
-                          if(GenPart_pt[i]<GenPart_pt[j])
-                          {
-                                  float a = GenPart_pt[i];
-                                  GenPart_pt[i] = GenPart_pt[j];
-                                  GenPart_pt[j] = a;
+		  if (leptonvec.DeltaR(genE) < 0.4)
+		  {
+			  match_3 = true;
+		  }
 
-                                  a = GenPart_eta[i];
-                                  GenPart_eta[i] = GenPart_eta[j];
-                                  GenPart_eta[j] = a;
-
-                                  a = GenPart_phi[i];
-                                  GenPart_phi[i] = GenPart_phi[j];
-                                  GenPart_phi[j] = a;
-
-                                  a = GenPart_mass[i];
-                                  GenPart_mass[i] = GenPart_mass[j];
-                                  GenPart_mass[j] = a;
-
-                          }
-                  }
-          }
-
-	  TLorentzVector leadgenpart, subleadgenpart;
-
-          leadgenpart.SetPtEtaPhiM(GenPart_pt[0], GenPart_eta[0], GenPart_phi[0], GenPart_mass[0]);
-          subleadgenpart.SetPtEtaPhiM(GenPart_pt[1], GenPart_eta[1], GenPart_phi[1], GenPart_mass[1]);
-
-	  if (isEle && bb == 1) 
-          {
-	 	  if (leadphovec.DeltaR(leadgenpart) < 0.4 && subleadphovec.DeltaR(subleadgenpart) < 0.4)
-                  {
-                          cut_flow_ph->Fill(0);
-                  }
-
-                  if (leadphovec.DeltaR(leadgenpart) < 0.4 && subleadphovec.DeltaR(subleadgenpart) > 0.4)
-                  {
-                          cut_flow_ph->Fill(1);
-                  }
-
-                  if (leadphovec.DeltaR(leadgenpart) > 0.4 && subleadphovec.DeltaR(subleadgenpart) < 0.4)
-                  {
-                          cut_flow_ph->Fill(2);
-                  }
-
-                  if (leadphovec.DeltaR(leadgenpart) > 0.4 && subleadphovec.DeltaR(subleadgenpart) > 0.4)
-                  {
-                          cut_flow_ph->Fill(3);
-                  }
+          }   
 	  }
 
-	  if (isMu && bb == 1) 
+
+	  if (isMu)
           {
-                  if (leadphovec.DeltaR(leadgenpart) < 0.4 && subleadphovec.DeltaR(subleadgenpart) < 0.4)
+          for(int i=0; i<nGenPart; i++)
+          {
+                  if (fabs(GenPart_pdg[i]) != 13) continue;
+
+		  TLorentzVector genM;
+                  genM.SetPtEtaPhiM(GenPart_pt[i], GenPart_eta[i], GenPart_phi[i], GenPart_mass[i]);
+
+                  if (leptonvec.DeltaR(genM) < 0.4)
                   {
-                          cut_flow_ph->Fill(4);
+			  match_4 = true;
                   }
 
-                  if (leadphovec.DeltaR(leadgenpart) < 0.4 && subleadphovec.DeltaR(subleadgenpart) > 0.4)
-                  {
-                          cut_flow_ph->Fill(5);
-                  }
+          }   
+	  }
 
-                  if (leadphovec.DeltaR(leadgenpart) > 0.4 && subleadphovec.DeltaR(subleadgenpart) < 0.4)
-                  {
-                          cut_flow_ph->Fill(6);
-                  }
+	  if (match_3) {cut_flow_ph->Fill(4);}
+          if (!match_3) {cut_flow_ph->Fill(5);}
+          if (match_4) {cut_flow_ph->Fill(6);}
+          if (!match_4) {cut_flow_ph->Fill(7);}
 
-                  if (leadphovec.DeltaR(leadgenpart) > 0.4 && subleadphovec.DeltaR(subleadgenpart) > 0.4)
-                  {
-                          cut_flow_ph->Fill(7);
-                  }
-          }
-*/
+
 
 	  //-----------------------------------------------all the SFs & etc---------------------------------------------//
 
@@ -1602,11 +1578,16 @@ int main(int argc, char *argv[])
 
 
 	  if (isEle || isMu) {
+
 	  leppt = leptonvec.Pt();
           lepy = leptonvec.Rapidity();
 	  lepeta = leptonvec.Eta();
 	  lepphi = leptonvec.Phi();
 	  lepe = leptonvec.Energy();
+
+	  Met = miset;
+	  SumEt = sumEt;
+	  jet_no = nPFJetAK4;
 
           b1pt = leadbvec_nom.Pt();
           b1y = leadbvec_nom.Rapidity();
@@ -1690,7 +1671,7 @@ int main(int argc, char *argv[])
 
           if(isMC){
 
-//        event_weight = 1.0;
+//          event_weight = 1.0;
       
 //	  xsec_weight = (59730*365.34*1.3)/(1.48899*pow(10,11)); 
           weight_nom = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig;
@@ -1721,8 +1702,6 @@ int main(int argc, char *argv[])
 	  pho2MVA = Photon_mvaid_Fall17V2_raw[1];
           dipho_invmass = (leadphovec+subleadphovec).M();   
 
-	  leadpho_corr_pdg = GenPart_pdg[loc1];
-          subleadpho_corr_pdg = GenPart_pdg[loc2];
 
 
 	  Tout->Fill();
