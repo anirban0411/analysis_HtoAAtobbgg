@@ -295,7 +295,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 int main(int argc, char *argv[])
 {
 
-	isMC = true;
+	isMC = false;
         isFastSIM = false;
         char fOut[50];
         string inputFile=argv[3];
@@ -369,23 +369,23 @@ int main(int argc, char *argv[])
         }
 
 	else if(inputFile=="new_v1_2017/DoubleMuon_2017B_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubleMuon_2017B_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2017/DoubleMuon_2017B_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v1_2017/DoubleMuon_2017C_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubleMuon_2017C_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2017/DoubleMuon_2017C_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v1_2017/DoubleMuon_2017D_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubleMuon_2017D_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2017/DoubleMuon_2017D_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v1_2017/DoubleMuon_2017E_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubleMuon_2017E_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2017/DoubleMuon_2017E_%s_%s.root",argv[1],argv[2]);
         }
 
 	else if(inputFile=="new_v1_2017/DoubleMuon_2017F_new_v1.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2018/DoubleMuon_2017F_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DoubMu/2017/DoubleMuon_2017F_%s_%s.root",argv[1],argv[2]);
         }
 
         else{
@@ -1537,7 +1537,7 @@ int main(int argc, char *argv[])
 
 	  if(isMC){
 
-          event_weight = 1.0;
+//          event_weight = 1.0;
 
           weight_nom = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig;
 
