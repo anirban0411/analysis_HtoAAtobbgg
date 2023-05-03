@@ -299,7 +299,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 int main(int argc, char *argv[])
 {
 
-	isMC = true;
+	isMC = false;
         isFastSIM = false;
         char fOut[50];
         string inputFile=argv[3];
@@ -336,10 +336,6 @@ int main(int argc, char *argv[])
                 sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/ZH/ZH_mA_55_%s_%s.root",argv[1],argv[2]);
         }
 
-        else if(inputFile=="new_v3_2018/ZH_M40_new_v3.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/ZH/ZH_mA_40_%s_%s.root",argv[1],argv[2]);
-        }
-
 	else if(inputFile=="new_v3_2018/TTGJets_new_v3.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/TTGJets/2018/ZH/TTGJets_%s_%s.root",argv[1],argv[2]);
         }
@@ -357,19 +353,19 @@ int main(int argc, char *argv[])
         }
 
 	else if(inputFile=="new_v3_2018/EGamma_2018A_new_v3.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018A_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/ZH/egamma_2018A_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v3_2018/EGamma_2018B_new_v3.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018B_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/ZH/egamma_2018B_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v3_2018/EGamma_2018C_new_v3.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018C_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/ZH/egamma_2018C_%s_%s.root",argv[1],argv[2]);
         }
 
         else if(inputFile=="new_v3_2018/EGamma_2018D_new_v3.log"){
-                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018D_%s_%s.root",argv[1],argv[2]);
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/ZH/egamma_2018D_%s_%s.root",argv[1],argv[2]);
         }
 
 	else if(inputFile=="new_v3_2018/DoubleMuon_2018A_new_v3.log"){
@@ -1283,7 +1279,7 @@ int main(int argc, char *argv[])
           for(int i=0; i<nPhoton; i++)
           {
                   if (Photon_PixelSeed[i]) continue;
-                  if (!Photon_passEveto[i]) continue;
+        //          if (!Photon_passEveto[i]) continue;
                   if (Photon_pt[i] < 10) continue;
                   if (fabs(Photon_eta[i]) > 2.5) continue;
                   if (fabs(Photon_eta[i]) > 1.44 && fabs(Photon_eta[i]) < 1.57) continue;
@@ -1541,7 +1537,7 @@ int main(int argc, char *argv[])
 
 	  if(isMC){
 
- //         event_weight = 1.0;
+//          event_weight = 1.0;
 
           weight_nom = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig;
 

@@ -251,7 +251,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float Generator_qscale, Generator_x1, Generator_x2, Generator_xpdf1, Generator_xpdf2, Generator_scalePDF;
   int Generator_id1, Generator_id2;
 
-  float miset , misphi , sumEt, misetsig, Met, SumEt ;
+  float miset , misphi , sumEt, misetsig, Met, SumEt, MetPhi;
   int jet_no;
 
   int npu_vert;
@@ -308,7 +308,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 int main(int argc, char *argv[])
 {
 
-	isMC = false;
+	isMC = true;
         isFastSIM = false;
 	char fOut[50];
         string inputFile=argv[3];
@@ -422,7 +422,7 @@ int main(int argc, char *argv[])
 	Tout->Branch("lepe", &lepe, "lepe/F");
 
 	Tout->Branch("Met", &Met, "Met/F");
-        Tout->Branch("SumEt", &SumEt, "SumEt/F");
+        Tout->Branch("MetPhi", &MetPhi, "MetPhi/F");
 
         Tout->Branch("jet_no", &jet_no, "jet_no/I");
         Tout->Branch("b1pt", &b1pt, "b1pt/F");
@@ -602,6 +602,10 @@ int main(int argc, char *argv[])
    T1->SetBranchAddress("prefiringweight",&prefiringweight);
    T1->SetBranchAddress("prefiringweightup",&prefiringweightup);
    T1->SetBranchAddress("prefiringweightdown",&prefiringweightdown);
+
+   T1->SetBranchAddress("CHSMET_pt",&miset);
+   T1->SetBranchAddress("CHSMET_sumEt",&sumEt);
+   T1->SetBranchAddress("CHSMET_phi",&misphi);
 
    T1->SetBranchAddress("nPFJetAK4",&nPFJetAK4);
    T1->SetBranchAddress("PFJetAK4_pt",PFJetAK4_pt);
@@ -1454,7 +1458,7 @@ int main(int argc, char *argv[])
 	  lepe = leptonvec.Energy();
 
 	  Met = miset;
-          SumEt = sumEt;
+          MetPhi = misphi;
           jet_no = nPFJetAK4;
 
           b1pt = leadbvec_nom.Pt();
@@ -1539,7 +1543,7 @@ int main(int argc, char *argv[])
 
           if(isMC){
 
-//          event_weight = 1.0;
+          event_weight = 1.0;
        
           weight_nom = event_weight * puWeight * prefiringweight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
 

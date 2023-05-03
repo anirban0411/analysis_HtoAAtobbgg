@@ -300,7 +300,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 int main(int argc, char *argv[])
 {
 
-	isMC = true;
+	isMC = false;
         isFastSIM = false;
         char fOut[50];
         string inputFile=argv[3];

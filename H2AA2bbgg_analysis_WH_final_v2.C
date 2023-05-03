@@ -109,6 +109,43 @@ float* Electron_SF(TFile *file_el_sf, float pt, float eta){
 }
 
 
+float* Photon_SF(TFile *file_pho_sf, float pt, float eta){
+
+        char name[100];
+
+        TH2F *h_SF = (TH2F*)file_pho_sf->Get("EGamma_SF2D");
+        TH2F *h_SF_statData = (TH2F*)file_pho_sf->Get("statData");
+        TH2F *h_SF_statMC = (TH2F*)file_pho_sf->Get("statMC");
+        TH2F *h_SF_altBkgModel = (TH2F*)file_pho_sf->Get("altBkgModel");
+        TH2F *h_SF_altSignalModel = (TH2F*)file_pho_sf->Get("altSignalModel");
+        TH2F *h_SF_altMCEff = (TH2F*)file_pho_sf->Get("altMCEff");
+        TH2F *h_SF_altTagSelection = (TH2F*)file_pho_sf->Get("altTagSelection");
+
+        int eta_bin_id = h_SF->GetXaxis()->FindBin(eta);
+        int pt_bin_id = h_SF->GetYaxis()->FindBin(pt);
+
+        static float sfvalues[9] = {-100,-100,-100,-100,-100,-100,-100,-100,-100};
+
+        if(eta_bin_id>0 && eta_bin_id<=(h_SF->GetNbinsX()) && pt_bin_id>0 && pt_bin_id<=(h_SF->GetNbinsY())){
+                sfvalues[0] = h_SF->GetBinContent(eta_bin_id,pt_bin_id);
+                sfvalues[1] = sfvalues[0]+h_SF->GetBinError(eta_bin_id,pt_bin_id);
+                sfvalues[2] = sfvalues[0]-h_SF->GetBinError(eta_bin_id,pt_bin_id);
+                sfvalues[3] = h_SF_statData->GetBinContent(eta_bin_id,pt_bin_id);
+                sfvalues[4] = h_SF_statMC->GetBinContent(eta_bin_id,pt_bin_id);
+                sfvalues[5] = h_SF_altBkgModel->GetBinContent(eta_bin_id,pt_bin_id);
+                sfvalues[6] = h_SF_altSignalModel->GetBinContent(eta_bin_id,pt_bin_id);
+                sfvalues[7] = h_SF_altMCEff->GetBinContent(eta_bin_id,pt_bin_id);
+                sfvalues[8] = h_SF_altTagSelection->GetBinContent(eta_bin_id,pt_bin_id);
+        }
+        else{
+                sfvalues[0] = sfvalues[1] = sfvalues[2] = 1;
+                sfvalues[3] = sfvalues[4] = sfvalues[5] = sfvalues[6] = sfvalues[7] = sfvalues[8] = 0;
+                }
+
+        return sfvalues;
+}
+ 
+
 float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 
 	TH1F *h_data = (TH1F*)file_pu_ratio->Get("pileup_weight");
@@ -256,7 +293,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float Generator_qscale, Generator_x1, Generator_x2, Generator_xpdf1, Generator_xpdf2, Generator_scalePDF;
   int Generator_id1, Generator_id2;
 
-  float miset , misphi , sumEt, misetsig, Met, SumEt ;
+  float miset , misphi , sumEt, misetsig, Met, SumEt, MetPhi ;
   int jet_no;
 
   int npu_vert;
@@ -286,11 +323,14 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
   float invmassbbgg, invmassbbgg_jesup, invmassbbgg_jesdn, invmassbbgg_resoup, invmassbbgg_resodn;
   float bb_gg_dphi, bb_gg_dphi_jesup, bb_gg_dphi_jesdn, bb_gg_dphi_resoup, bb_gg_dphi_resodn;
 
-  double xsec_weight, weight_nom, weight_PU_up, weight_leptonsf_up, weight_prefiring_up, weight_bSF_up, weight_trig_up, weight_PU_dn, weight_leptonsf_dn, weight_prefiring_dn, weight_bSF_dn, weight_trig_dn;
+  double xsec_weight, weight_nom, weight_PU_up, weight_leptonsf_up, weight_photonsf_up, weight_prefiring_up, weight_bSF_up, weight_trig_up, weight_PU_dn, weight_leptonsf_dn, weight_photonsf_dn, weight_prefiring_dn, weight_bSF_dn, weight_trig_dn, weight_haspixsf_up, weight_haspixsf_dn;
 
   float Jet_pt_nom[njetmx], Jet_mass_nom[njetmx], Jet_pt_jesup[njetmx], Jet_mass_jesup[njetmx], Jet_pt_jesdn[njetmx], Jet_mass_jesdn[njetmx], Jet_pt_resoup[njetmx], Jet_mass_resoup[njetmx], Jet_pt_resodn[njetmx], Jet_mass_resodn[njetmx];
   float dR_leadpho_genpart[npartmx], dR_subleadpho_genpart[npartmx];
   int leadpho_corr_pdg, subleadpho_corr_pdg;
+
+  float arr1[npartmx], arr2[npartmx], sval1, sval2;
+  int pos1, pos2, leadpho_matched_genpdg, subleadpho_matched_genpdg, leadpho_matched_genmompdg, subleadpho_matched_genmompdg;
 
   int aa, ab, bb;
   bool isEle, isMu;
@@ -310,6 +350,7 @@ float* Get_PU_Weights(TFile *file_pu_ratio, int npu){
 int main(int argc, char *argv[])
 {
 	isMC = true;
+	isDATA = false;
         isFastSIM = false;
 	char fOut[50];
         string inputFile=argv[3];
@@ -324,6 +365,7 @@ int main(int argc, char *argv[])
 
         char name[1000];
 
+
         TFile *file_mu_sf;
         sprintf(name,"data/Efficiencies_muon_generalTracks_Z_Run%i_UL_ID.root",year);
         file_mu_sf = new TFile(name,"read");
@@ -331,11 +373,34 @@ int main(int argc, char *argv[])
         TFile *file_el_sf;
         sprintf(name,"data/egammaEffi.txt_Ele_%s_EGM2D_UL%i.root",electron_id_name.c_str(),year);
         file_el_sf = new TFile(name,"read");
+
+	TFile *file_pho_sf;
+        sprintf(name,"EGamma_SF/egammaEffi.txt_EGM2D_Pho_wp90.root_UL18.root");
+        file_pho_sf = new TFile(name,"read");
    
         TFile *file_pu_ratio;
         sprintf(name,"data/pileup/RatioPileup-UL%i-100bins.root",year);
         file_pu_ratio = new TFile(name,"read");
 
+	TFile *f_pho_hasPix = new TFile("EGamma_SF/HasPix_SummaryPlot_UL18.root");
+        TH1F *h1 = (TH1F*) f_pho_hasPix->Get("MVAID/SF_HasPix_MVAID");
+        TH1F *h2 = (TH1F*) f_pho_hasPix->Get("MVAID/Staunc_HasPix_MVAID");
+        TH1F *h3 = (TH1F*) f_pho_hasPix->Get("MVAID/PUunc_HasPix_MVAID");
+        TH1F *h4 = (TH1F*) f_pho_hasPix->Get("MVAID/Modelunc_HasPix_MVAID");
+
+	float SF_HasPix_EB = h1->GetBinContent(1);
+        float SF_HasPix_EE = h1->GetBinContent(4);
+ 	float Staunc_HasPix_EB = h2->GetBinContent(1);
+        float Staunc_HasPix_EE = h2->GetBinContent(4);
+	float PUunc_HasPix_EB = h3->GetBinContent(1);
+        float PUunc_HasPix_EE = h3->GetBinContent(4);
+	float Modelunc_HasPix_EB = h4->GetBinContent(1);
+        float Modelunc_HasPix_EE = h4->GetBinContent(4);
+
+	float SF_HasPix_EB_up = SF_HasPix_EB + sqrt(Staunc_HasPix_EB * Staunc_HasPix_EB + PUunc_HasPix_EB * PUunc_HasPix_EB + Modelunc_HasPix_EB * Modelunc_HasPix_EB);
+        float SF_HasPix_EB_dn = SF_HasPix_EB - sqrt(Staunc_HasPix_EB * Staunc_HasPix_EB + PUunc_HasPix_EB * PUunc_HasPix_EB + Modelunc_HasPix_EB * Modelunc_HasPix_EB);
+	float SF_HasPix_EE_up = SF_HasPix_EE + sqrt(Staunc_HasPix_EE * Staunc_HasPix_EE + PUunc_HasPix_EE * PUunc_HasPix_EE + Modelunc_HasPix_EE * Modelunc_HasPix_EE);
+        float SF_HasPix_EE_dn = SF_HasPix_EE - sqrt(Staunc_HasPix_EE * Staunc_HasPix_EE + PUunc_HasPix_EE * PUunc_HasPix_EE + Modelunc_HasPix_EE * Modelunc_HasPix_EE);
 
 
 	if(inputFile=="new_v3_2018/WH_M20_new_v4.log"){
@@ -458,7 +523,7 @@ int main(int argc, char *argv[])
 	Tout->Branch("lepe", &lepe, "lepe/F");
 
 	Tout->Branch("Met", &Met, "Met/F");
-        Tout->Branch("SumEt", &SumEt, "SumEt/F");
+        Tout->Branch("MetPhi", &MetPhi, "MetPhi/F");
 
         Tout->Branch("jet_no", &jet_no, "jet_no/I");
         Tout->Branch("b1pt", &b1pt, "b1pt/F");
@@ -559,18 +624,27 @@ int main(int argc, char *argv[])
 	Tout->Branch("leadpho_corr_pdg", &leadpho_corr_pdg, "leadpho_corr_pdg/I");
 	Tout->Branch("subleadpho_corr_pdg", &subleadpho_corr_pdg, "subleadpho_corr_pdg/I");
 
+	Tout->Branch("leadpho_matched_genpdg", &leadpho_matched_genpdg, "leadpho_matched_genpdg/I");
+	Tout->Branch("subleadpho_matched_genpdg", &subleadpho_matched_genpdg, "subleadpho_matched_genpdg/I");
+	Tout->Branch("leadpho_matched_genmompdg", &leadpho_matched_genmompdg, "leadpho_matched_genmompdg/I");
+        Tout->Branch("subleadpho_matched_genmompdg", &subleadpho_matched_genmompdg, "subleadpho_matched_genmompdg/I");
+
 	Tout->Branch("xsec_weight", &xsec_weight, "xsec_weight/D");
 	Tout->Branch("weight_nom", &weight_nom, "weight_nom/D");
 	Tout->Branch("weight_PU_up", &weight_PU_up, "weight_PU_up/D");
 	Tout->Branch("weight_leptonsf_up", &weight_leptonsf_up, "weight_leptonsf_up/D");
+	Tout->Branch("weight_photonsf_up", &weight_photonsf_up, "weight_photonsf_up/D");
 //	Tout->Branch("weight_prefiring_up", &weight_prefiring_up, "weight_prefiring_up/D");
 	Tout->Branch("weight_bSF_up", &weight_bSF_up, "weight_bSF_up/D");
 	Tout->Branch("weight_trig_up", &weight_trig_up, "weight_trig_up/D");
+	Tout->Branch("weight_haspixsf_up", &weight_haspixsf_up, "weight_haspixsf_up/D");
 	Tout->Branch("weight_PU_dn", &weight_PU_dn, "weight_PU_dn/D");
 	Tout->Branch("weight_leptonsf_dn", &weight_leptonsf_dn, "weight_leptonsf_dn/D");
+	Tout->Branch("weight_photonsf_dn", &weight_photonsf_dn, "weight_photonsf_dn/D");
 //	Tout->Branch("weight_prefiring_dn", &weight_prefiring_dn, "weight_prefiring_dn/D");
 	Tout->Branch("weight_bSF_dn", &weight_bSF_dn, "weight_bSF_dn/D");
 	Tout->Branch("weight_trig_dn", &weight_trig_dn, "weight_trig_dn/D");
+	Tout->Branch("weight_haspixsf_dn", &weight_haspixsf_dn, "weight_haspixsf_dn/D");
 
         Tout->Branch("ab", &ab, "ab/I");
         Tout->Branch("bb", &bb, "bb/I");
@@ -644,6 +718,7 @@ int main(int argc, char *argv[])
 
    T1->SetBranchAddress("CHSMET_pt",&miset);
    T1->SetBranchAddress("CHSMET_sumEt",&sumEt);
+   T1->SetBranchAddress("CHSMET_phi",&misphi);
 
    T1->SetBranchAddress("nPFJetAK4",&nPFJetAK4);
    T1->SetBranchAddress("PFJetAK4_pt",PFJetAK4_pt);
@@ -806,7 +881,6 @@ int main(int argc, char *argv[])
 
   T1->SetBranchAddress("LHE_weight",&LHE_weight);
   }
-
 
 
   int nevents;
@@ -1493,7 +1567,38 @@ int main(int argc, char *argv[])
 
 
 
+	for (int i = 0; i < nGenPart; i++)
+	{
+		TLorentzVector GenPartV;
+		GenPartV.SetPtEtaPhiM(GenPart_pt[i], GenPart_eta[i], GenPart_phi[i], GenPart_mass[i]);
+		arr1[i] = leadphovec.DeltaR(GenPartV);
+		arr2[i] = subleadphovec.DeltaR(GenPartV);
+	}
+
+	sval1 = arr1[0];
+	sval2 = arr2[0];
+	pos1 = 0;
+	pos2 = 0;
+
+	for (int i = 0; i < nGenPart; i++)
+	{
+		if(sval1 > arr1[i])
+		{
+			sval1 = arr1[i];
+			pos1 = i;
+		}
+
+		if(sval2 > arr2[i])
+                {
+                        sval2 = arr2[i];
+                        pos2 = i;
+                }
+	}
+
+
+
 	  //-----------------------------------------------all the SFs & etc---------------------------------------------//
+
 
 
           double leptonsf_weight = 1.0;
@@ -1501,6 +1606,17 @@ int main(int argc, char *argv[])
           double leptonsf_weight_dn = 1.0;
 	  double leptonsf_weight_stat = 1.0;
 	  double leptonsf_weight_syst = 1.0;
+
+	  double photonsf_weight = 1.0;
+          double photonsf_weight_up = 1.0;
+          double photonsf_weight_dn = 1.0;
+          double photonsf_weight_stat = 1.0;
+          double photonsf_weight_syst = 1.0;
+
+	  double haspix_wt = 1.0;
+	  double haspix_wt_up = 1.0;
+	  double haspix_wt_dn = 1.0;
+
 
 	  double puWeight, puWeightup, puWeightdown;
 	  puWeight = puWeightup = puWeightdown = 1.0;
@@ -1534,6 +1650,34 @@ int main(int argc, char *argv[])
 				leptonsf_weight_stat *= *(sfvalues+3);
 				leptonsf_weight_syst *= *(sfvalues+4);
                         } }
+
+		for(unsigned ph=0; ph<nPhoton; ph++){
+                                float *sfvalues = Photon_SF(file_pho_sf, Photon_pt[ph], Photon_eta[ph]);
+                                photonsf_weight *= sfvalues[0];
+                                photonsf_weight_up *= sfvalues[1];
+                                photonsf_weight_dn *= sfvalues[2];
+                                photonsf_weight_stat *= (sfvalues[0] + sqrt(sfvalues[3]*sfvalues[3] + sfvalues[4]*sfvalues[4]));  // like this for time being
+                                photonsf_weight_syst *= (sfvalues[0] + sqrt(sfvalues[5]*sfvalues[5] + sfvalues[6]*sfvalues[6] + sfvalues[7]*sfvalues[7] + sfvalues[8]*sfvalues[8]));  // like this for time being
+                        }
+
+			if (fabs(leadphovec.Eta()) <= 1.44 && fabs(subleadphovec.Eta()) <= 1.44)
+  			{
+				haspix_wt = SF_HasPix_EB * SF_HasPix_EB;
+				haspix_wt_up = SF_HasPix_EB_up * SF_HasPix_EB_up;
+				haspix_wt_dn = SF_HasPix_EB_dn * SF_HasPix_EB_dn;
+			}
+			if (fabs(leadphovec.Eta()) >= 1.57 && fabs(subleadphovec.Eta()) >= 1.57)
+                        {
+                                haspix_wt = SF_HasPix_EE * SF_HasPix_EE;
+				haspix_wt_up = SF_HasPix_EE_up * SF_HasPix_EE_up;
+                                haspix_wt_dn = SF_HasPix_EE_dn * SF_HasPix_EE_dn;
+                        }
+			if ((fabs(leadphovec.Eta()) <= 1.44 && fabs(subleadphovec.Eta()) >= 1.57) || (fabs(subleadphovec.Eta()) <= 1.44 && fabs(leadphovec.Eta()) >= 1.57))
+                        {
+                                haspix_wt = SF_HasPix_EB * SF_HasPix_EE;
+				haspix_wt_up = SF_HasPix_EB_up * SF_HasPix_EE_up;
+                                haspix_wt_dn = SF_HasPix_EB_dn * SF_HasPix_EE_dn;
+                        }
 
                 }
 
@@ -1586,7 +1730,7 @@ int main(int argc, char *argv[])
 	  lepe = leptonvec.Energy();
 
 	  Met = miset;
-	  SumEt = sumEt;
+	  MetPhi = misphi;
 	  jet_no = nPFJetAK4;
 
           b1pt = leadbvec_nom.Pt();
@@ -1671,20 +1815,25 @@ int main(int argc, char *argv[])
 
           if(isMC){
 
-//          event_weight = 1.0;
+          event_weight = 1.0;
       
 //	  xsec_weight = (59730*365.34*1.3)/(1.48899*pow(10,11)); 
-          weight_nom = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig;
+          weight_nom = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt;
 
-          weight_PU_up = event_weight * puWeightup * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
-          weight_leptonsf_up = event_weight * puWeight * leptonsf_weight_up * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
-          weight_bSF_up = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF_up[0] * PFJetAK4_btag_DeepFlav_SF_up[1];
-	  weight_trig_up = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig_1_up * SF_Trig_2_up;
+          weight_PU_up = event_weight * puWeightup * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt;
+          weight_leptonsf_up = event_weight * puWeight * leptonsf_weight_up * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt;
+          weight_bSF_up = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF_up[0] * PFJetAK4_btag_DeepFlav_SF_up[1] * SF_Trig * photonsf_weight * haspix_wt;
+	  weight_trig_up = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig_1_up * SF_Trig_2_up * photonsf_weight * haspix_wt;
+	  weight_photonsf_up = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight_up * haspix_wt;
+	  weight_haspixsf_up = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt_up;
 
-          weight_PU_dn = event_weight * puWeightdown * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
-          weight_leptonsf_dn = event_weight * puWeight * leptonsf_weight_dn * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1];
-          weight_bSF_dn = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF_dn[0] * PFJetAK4_btag_DeepFlav_SF_dn[1];
-	  weight_trig_dn = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig_1_dn * SF_Trig_2_dn;
+          weight_PU_dn = event_weight * puWeightdown * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt;
+          weight_leptonsf_dn = event_weight * puWeight * leptonsf_weight_dn * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt;
+          weight_bSF_dn = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF_dn[0] * PFJetAK4_btag_DeepFlav_SF_dn[1] * SF_Trig * photonsf_weight * haspix_wt;
+	  weight_trig_dn = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig_1_dn * SF_Trig_2_dn * photonsf_weight * haspix_wt;
+	  weight_photonsf_dn = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight_dn * haspix_wt;
+	  weight_haspixsf_dn = event_weight * puWeight * leptonsf_weight * PFJetAK4_btag_DeepFlav_SF[0] * PFJetAK4_btag_DeepFlav_SF[1] * SF_Trig * photonsf_weight * haspix_wt_dn;
+
           }  
 
           pho_no = nPhoton;
@@ -1701,10 +1850,15 @@ int main(int argc, char *argv[])
 	  pho1MVA = Photon_mvaid_Fall17V2_raw[0];
 	  pho2MVA = Photon_mvaid_Fall17V2_raw[1];
           dipho_invmass = (leadphovec+subleadphovec).M();   
+	  leadpho_matched_genpdg = GenPart_pdg[pos1];
+	  subleadpho_matched_genpdg = GenPart_pdg[pos2];
+	  leadpho_matched_genmompdg = GenPart_mompdg[pos1];
+	  subleadpho_matched_genmompdg = GenPart_mompdg[pos2];
 
 
 
 	  Tout->Fill();
+
 
 }
 	 

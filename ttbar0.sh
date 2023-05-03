@@ -5,4 +5,4 @@ export SCRAM_ARCH=slc6_amd64_gcc630
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 export X509_USER_PROXY=/home/abala/x509up_u56615
 eval
-./analysis 0 5 all_log_files/WH_mA_20_test.log
+./analysis 0 2 new_v3_2018/WH_M20_new_v4.log
