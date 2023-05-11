@@ -402,7 +402,7 @@ int main(int argc, char *argv[])
 	float SF_HasPix_EE_up = SF_HasPix_EE + sqrt(Staunc_HasPix_EE * Staunc_HasPix_EE + PUunc_HasPix_EE * PUunc_HasPix_EE + Modelunc_HasPix_EE * Modelunc_HasPix_EE);
         float SF_HasPix_EE_dn = SF_HasPix_EE - sqrt(Staunc_HasPix_EE * Staunc_HasPix_EE + PUunc_HasPix_EE * PUunc_HasPix_EE + Modelunc_HasPix_EE * Modelunc_HasPix_EE);
 
-
+/*
 	if(inputFile=="new_v3_2018/WH_M20_new_v4.log"){
                 sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_20_%s_%s.root",argv[1],argv[2]);
         }
@@ -488,6 +488,68 @@ int main(int argc, char *argv[])
         }
 
 	else{
+                cout<<"Input file does not exist"<<endl;
+                exit(0);
+        }
+*/
+
+	if(inputFile=="2018_vf1/WH_M20_2018_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_20_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/WH_M55_2018_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/signal/2018/WH/WH_mA_55_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/TTGJets_2018_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/TTGJets/2018/WH/TTGJets_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/DYJetsToLL_M50_2018_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/DYJetsToLL/2018/WH/DYJetsToLL_M50_%s_%s.root",argv[1],argv[2]);
+        }
+
+	else if(inputFile=="2018_vf1/TTTo2L2Nu_2018_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/TTTo2L2Nu/2018/WH/TTTo2L2Nu_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/TTToSemiLeptonic_2018_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/TTSL/2018/WH/TTSL_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/EGamma_2018A_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018A_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/EGamma_2018B_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018B_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/EGamma_2018C_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018C_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/EGamma_2018D_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/egamma/2018/egamma_2018D_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/SingleMuon_2018A_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018A_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/SingleMuon_2018B_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018B_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/SingleMuon_2018C_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018C_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else if(inputFile=="2018_vf1/SingleMuon_2018D_v1.log"){
+                sprintf(fOut,"/home/abala/t3store3/Higgs/SinMu/2018/SinMu_2018D_%s_%s.root",argv[1],argv[2]);
+        }
+
+        else{
                 cout<<"Input file does not exist"<<endl;
                 exit(0);
         }
