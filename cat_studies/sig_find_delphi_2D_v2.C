@@ -10,6 +10,8 @@
 #include "TF1.h"
 #include "TLorentzVector.h"
 #include <ctime>
+#include <iomanip>
+
 
 
 using namespace std;
@@ -49,7 +51,7 @@ void sig_find_delphi_2D_v2()
 
         start = clock();
 
-	TFile* f = TFile::Open("combined_2018_wh_v1_bin50.root");
+	TFile* f = TFile::Open("combined_2018_wh_v1_bin20.root");
 
 	TH1F *h1 = (TH1F*) f->Get("sig_20");
         TH1F *h2 = (TH1F*) f->Get("data_obs");
@@ -138,7 +140,25 @@ void sig_find_delphi_2D_v2()
                 }
         }
 
-	int a0, b0, a1, b1;
+
+	cout<<setprecision(5)<<fixed;
+	for (int i = 1; i < dim; i++)
+        {
+                for (int k = 1; k < i; k++)
+                {
+                        float sig_sum20 = sqrt(significance20_1[k]*significance20_1[k] + significance20[i]*significance20[i]);
+                        float sig_sum55 = sqrt(significance55_1[k]*significance55_1[k] + significance55[i]*significance55[i]);
+
+			cout << "sensitivity at 20 GeV: " << sig_sum20 << "	" << "sensitivity at 55 GeV: " << sig_sum55 << "	" << "lower bin: " << k << "	" << "higher bin: " << i << endl;
+                }
+        }
+
+
+	int a0 = 0; 
+	int b0 = 0; 
+	int a1 = 0; 
+	int b1 = 0;
+
 	for (int i = 1; i < dim; i++)
         {
                 for (int k = 1; k < i; k++)
@@ -148,6 +168,7 @@ void sig_find_delphi_2D_v2()
 			{
 				a0 = k;
 				b0 = i;
+				break;
 			}
 
 			float sig_sum55 = sqrt(significance55_1[k]*significance55_1[k] + significance55[i]*significance55[i]);
@@ -155,14 +176,17 @@ void sig_find_delphi_2D_v2()
                         {
 				a1 = k;
 				b1 = i;
+				break;
                         }
                 }
         }
 
+
+	cout << "\n";
 	cout << "corresponding bins no at 20 GeV: " << a0 << "   " << b0 << endl;
 	cout << "corresponding delphi at 20 GeV: " << (M_PI/dim)*a0 << "        " << (M_PI/dim)*b0 << endl;
 	cout << "corresponding bins no at 55 GeV: " << a1 << "   " << b1 << endl;
-	cout << "corresponding delphi at 55 GeV: " << (M_PI/dim)*a1 << "	" << (M_PI/dim)*b1 << endl;
+	cout << "corresponding delphi at 55 GeV: " << (M_PI/dim)*a1 << "	" << (M_PI/dim)*b1 << endl << "\n";
         cout << "max sensitivity at 20 GeV: " << max20 << endl;
         cout << "max sensitivity at 55 GeV: " << max55 << endl;
 

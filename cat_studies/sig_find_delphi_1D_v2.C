@@ -49,7 +49,7 @@ void sig_find_delphi_1D_v2()
 
         start = clock();
 
-	TFile* f = TFile::Open("combined_2018_wh_v1_bin100.root");
+	TFile* f = TFile::Open("combined_2018_wh_v1_bin50.root");
 
 	TH1F *h1 = (TH1F*) f->Get("sig_20");
         TH1F *h2 = (TH1F*) f->Get("data_obs");
@@ -75,11 +75,13 @@ void sig_find_delphi_1D_v2()
 			bkg = bkg + b;
 		}
 
-		if ((sum20+bkg) <= 0) continue;
-		if ((sum55+bkg) <= 0) continue;
+		if ((bkg) <= 0) break;
+		if ((bkg) <= 0) break;
 
-		significance20[i] = sum20/sqrt(sum20+bkg);
-		significance55[i] = sum55/sqrt(sum55+bkg);
+		significance20[i] = sum20/sqrt(bkg);
+		significance55[i] = sum55/sqrt(bkg);
+
+		cout << sum20 << "	" << bkg << "	" << significance20[i]  << "	" << (M_PI/dim)*i << endl;
 	}
 
 	float max20 = -999.0;
